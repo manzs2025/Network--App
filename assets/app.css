@@ -42,7 +42,7 @@ body.appx{font-size:16.5px;line-height:1.8;padding-bottom:calc(24px + env(safe-a
 
 /* units */
 .units{display:grid;gap:14px}
-@media (min-width:700px){ .units{grid-template-columns:1fr 1fr} }
+
 .ucard{position:relative;display:flex;flex-direction:column;gap:10px;overflow:hidden;padding:16px 16px 14px}
 .ucard::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--uc)}
 .ucard .top{display:flex;gap:12px;align-items:center}
@@ -161,3 +161,90 @@ input.in.wide{font-size:17px;letter-spacing:.02em;font-family:ui-monospace,Conso
 .shake{animation:shk .35s}
 @keyframes shk{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
 @media (prefers-reduced-motion:reduce){ .pop,.shake{animation:none} }
+
+/* ===== practice: generic components ===== */
+.item{font-family:var(--fh);font-weight:800;color:var(--head);font-size:clamp(19px,2.4vw,26px);line-height:1.6;text-align:center;background:var(--soft);border:1.5px solid var(--line);border-radius:18px;padding:16px 14px;margin:4px 0 14px}
+.item svg.topo-q{width:100%;max-width:340px;height:auto;display:block;margin:0 auto}
+.opts.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.seq{list-style:none;margin:6px 0 12px;padding:0;display:grid;gap:7px}
+.seq li{display:flex;align-items:center;gap:10px;min-height:46px;border-radius:13px;border:1.5px dashed var(--line2);padding:6px 10px;background:var(--card);transition:.15s}
+.seq li.fill{border-style:solid;border-color:var(--acc2);background:var(--soft)}
+.seq li.ok{border-color:var(--green);background:rgba(46,125,50,.09)}
+.seq li.no{border-color:var(--red);background:rgba(198,40,40,.07)}
+.seq .sn{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--line);color:var(--head);font-family:var(--fh);font-weight:800;font-size:14px;flex:none}
+.seq li.fill .sn{background:var(--acc2);color:#fff}
+.seq .sv{display:flex;align-items:center;gap:8px;font-family:var(--fh);font-weight:700;color:var(--head);font-size:15.5px;line-height:1.5}
+.pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chipb{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:13px;border:1.5px solid var(--line2);background:var(--card);font-family:var(--fh);font-weight:700;color:var(--head);font-size:15px;line-height:1.4;min-height:44px;transition:.15s}
+.chipb:active{transform:scale(.97)}
+.chipb[disabled]{opacity:.28;cursor:default}
+.sw{display:inline-block;width:30px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.25);flex:none}
+.seqctl{display:flex;justify-content:center;margin-top:10px}
+.btn.sm{padding:7px 14px;font-size:14px;border-radius:11px}
+.calc-q{direction:ltr;text-align:center;font-family:var(--fh);font-weight:900;color:var(--head);font-size:clamp(26px,6vw,40px);margin:6px 0 14px}
+.calc-q .u{color:var(--acc)}
+
+/* ===== larger, readable layout: one unit per row, scales up on big screens ===== */
+.wrap{max-width:1040px}
+body.appx{font-size:clamp(16.5px,.55vw + 14px,21px)}
+.apphead{padding-inline:clamp(14px,3vw,32px)}
+.apphead .logo{width:clamp(38px,4.6vw,54px);height:clamp(38px,4.6vw,54px);border-radius:clamp(11px,1.3vw,15px)}
+.apphead .ttl b{font-size:clamp(16.5px,2vw,23px)}
+.apphead .ttl small{font-size:clamp(12.5px,1.3vw,15.5px)}
+.hbtn{width:clamp(42px,4.4vw,52px);height:clamp(42px,4.4vw,52px);font-size:clamp(20px,2.2vw,25px)}
+.panel{padding:clamp(16px,2.4vw,28px);border-radius:clamp(20px,2.4vw,28px)}
+.welcome h1{font-size:clamp(26px,3.8vw,46px)}
+.welcome p{font-size:clamp(16px,1.9vw,22px)}
+.who{font-size:clamp(14px,1.5vw,18px);padding:5px 14px 5px 6px}
+.who .ic{width:clamp(26px,2.8vw,34px);height:clamp(26px,2.8vw,34px)}
+.ring{width:clamp(96px,12vw,150px);height:clamp(96px,12vw,150px)}
+.ring::before{inset:clamp(9px,1.1vw,13px)}
+.ring b{font-size:clamp(22px,2.8vw,34px)}
+.ring small{font-size:clamp(11px,1.2vw,14.5px)}
+.cont{padding:clamp(12px,1.6vw,18px) clamp(14px,1.8vw,22px)}
+.cont span{font-size:clamp(14px,1.6vw,18px)}
+.cont .ic{font-size:clamp(22px,2.4vw,28px)}
+.h-sec{font-size:clamp(19px,2.5vw,30px);margin:clamp(24px,3vw,36px) 4px clamp(12px,1.6vw,18px)}
+.units{grid-template-columns:1fr;gap:clamp(14px,2vw,22px)}
+.ucard{gap:clamp(10px,1.3vw,14px)}
+.ucard::before{height:clamp(4px,.6vw,6px)}
+.ucard .top{gap:clamp(12px,1.6vw,20px)}
+.ucard .num{width:clamp(56px,7vw,86px);height:clamp(56px,7vw,86px);font-size:clamp(26px,3.5vw,42px);border-radius:clamp(16px,2vw,22px)}
+.ucard small{font-size:clamp(13px,1.5vw,18px)}
+.ucard h3{font-size:clamp(21px,2.9vw,34px)}
+.ucard p{font-size:clamp(15.5px,1.9vw,21px)}
+.bar{height:clamp(8px,1vw,12px)}
+.meta{font-size:clamp(13px,1.5vw,18px)}
+.acts a,.acts span{font-size:clamp(15.5px,1.9vw,21px);padding:clamp(11px,1.5vw,17px) 10px;border-radius:clamp(13px,1.5vw,17px)}
+.acts .soon{font-size:clamp(13.5px,1.6vw,18px)}
+@media (min-width:760px){
+  .ucard{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,27%);column-gap:clamp(20px,3vw,40px);align-items:center}
+  .ucard > .top,.ucard > p,.ucard > .bar,.ucard > .meta{grid-column:1}
+  .ucard > .acts{grid-column:2;grid-row:1/5;flex-direction:column;align-self:stretch;justify-content:center;gap:10px}
+}
+.credit h3{font-size:clamp(20px,2.5vw,30px)}
+.credit p{font-size:clamp(15px,1.7vw,20px)}
+.credit .cr-mail{font-size:clamp(15px,1.7vw,19px);padding:clamp(8px,1vw,12px) clamp(16px,2vw,24px)}
+.credit{max-width:760px}
+/* practice */
+.intro p{font-size:clamp(15px,1.8vw,20px)}
+.intro b{font-size:clamp(17px,2.1vw,24px)}
+.intro .ii,.dcard .di{width:clamp(48px,5.6vw,64px);height:clamp(48px,5.6vw,64px);font-size:clamp(24px,2.8vw,32px)}
+.drills{grid-template-columns:1fr!important;gap:clamp(12px,1.6vw,18px)}
+@media (min-width:1000px){ .drills{grid-template-columns:1fr 1fr!important} }
+.dcard{padding:clamp(14px,2vw,22px)}
+.dcard h3{font-size:clamp(16.5px,2.1vw,23px)}
+.dcard p{font-size:clamp(13.5px,1.6vw,18px)}
+.chip{font-size:clamp(12px,1.3vw,15px)}
+#drill{max-width:860px;margin:0 auto}
+.dhead h2{font-size:clamp(18px,2.4vw,28px)}
+.qlabel{font-size:clamp(13.5px,1.6vw,18px)}
+.qtext{font-size:clamp(18px,2.3vw,28px)}
+.opt{font-size:clamp(15.5px,1.9vw,21px);min-height:clamp(48px,5.4vw,60px)}
+.fb{font-size:clamp(15px,1.75vw,20px)}
+.hint{font-size:clamp(14px,1.6vw,18px)}
+.btns .btn{font-size:clamp(16px,1.9vw,21px);padding:clamp(12px,1.5vw,16px) 16px}
+input.in{font-size:clamp(18px,2.1vw,24px)}
+.fld label{font-size:clamp(14px,1.6vw,18px)}
+.chipb{font-size:clamp(15px,1.8vw,20px)}
+.seq .sv{font-size:clamp(15.5px,1.9vw,20px)}

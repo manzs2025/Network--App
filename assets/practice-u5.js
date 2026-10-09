@@ -1,22 +1,11 @@
 /* ===== Unit 5 (IP) practice drills ===== */
 (function(){
-const {$,$$,store,say}=APP;
-const UID='u5', KEY='app:prac:'+UID;
-const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1)), pick=a=>a[ri(0,a.length-1)];
-const shuffle=a=>{ a=[...a]; for(let i=a.length-1;i>0;i--){ const j=ri(0,i); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const {$,$$,ri,pick,shuffle,esc,bidi,norm,ipNorm,ok,no}=PR;
 const b8=n=>n.toString(2).padStart(8,'0');
 const W=[128,64,32,16,8,4,2,1];
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-/* keep Latin / address fragments readable inside Arabic text */
-const bidi=s=>esc(s).replace(/\(([^()]*[A-Za-z0-9][^()]*)\)/g,(m,x)=>/[\u0600-\u06FF]/.test(x)?m:'<bdi dir="ltr">('+x+')</bdi>').replace(/(^|[\s،:]|>)([A-Za-z0-9]*[:.\/][A-Za-z0-9:.\/]*[A-Za-z0-9\/])(?=$|[\s،.؟)<])/g,(m,a,b)=>a+'<bdi dir="ltr">'+b+'</bdi>');
-/* Arabic-Indic digits and separators → Latin */
-const norm=s=>String(s||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٫،,]/g,'.').replace(/\s+/g,'');
-const ipNorm=s=>{ const t=norm(s); const m=t.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(\/\d{1,2})?$/); if(!m) return null; const o=m.slice(1,5).map(Number); if(o.some(x=>x>255)) return null; return {ip:o.join('.'),pre:m[5]?+m[5].slice(1):null}; };
 const CLS={A:{lo:1,hi:126,pat:'NHHH',mask:'255.0.0.0',pre:8,n:1},B:{lo:128,hi:191,pat:'NNHH',mask:'255.255.0.0',pre:16,n:2},C:{lo:192,hi:223,pat:'NNNH',mask:'255.255.255.0',pre:24,n:3}};
 const randIp=c=>{ const k=CLS[c]; return [ri(k.lo,k.hi),ri(0,255),ri(0,255),ri(1,254)]; };
 const patHtml=p=>'<div class="pat">'+p.split('').map(x=>`<span class="${x}">${x}</span>`).join('')+'</div>';
-const ok=(t,h)=>({ok:true,html:`<b class="t">${t||'إجابة صحيحة'}</b>${h||''}`});
-const no=(t,h)=>({ok:false,html:`<b class="t">${t||'إجابة غير صحيحة'}</b>${h||''}`});
 
 /* ---------- drills ---------- */
 const D=[];
@@ -135,49 +124,6 @@ const BANK=[
  ['ما البادئة الخاصة بعنوان الرابط المحلي (Link-Local) في IPv6؟',['FE80::/10','2000::/3','FC00::/7','FF00::/8'],'Link-Local بادئته FE80::/10، والعنوان الأحادي العام 2000::/3.'],
  ['كم عدد الكتل في عنوان IPv6؟',['8 كتل','4 كتل','6 كتل','16 كتلة'],'عدد الكتل = 8 كتل، و8 كتل × 16 بت = 128 بت.']
 ];
-const QN=10;
-D.push({id:'quiz',icon:'i-quiz',title:'اختبار سريع',desc:'10 أسئلة متنوعة من الوحدة مع شرح لكل إجابة.',quiz:true,
-  make(){ if(!this.round||this.round.i>=QN){ this.round={qs:shuffle(BANK).slice(0,QN),i:0,score:0}; } const r=this.round, it=r.qs[r.i]; return {it,opts:shuffle(it[1].map((t,k)=>({t,k}))),i:r.i}; },
-  render(q,b){ b.innerHTML=`<div class="qprog"><i style="width:${(q.i)/QN*100}%"></i></div><div class="qlabel">السؤال ${q.i+1} من ${QN}</div><div class="qtext">${bidi(q.it[0])}</div>
-    <div class="opts list">${q.opts.map(o=>`<button type="button" class="opt" data-k="${o.k}"><span dir="auto">${esc(o.t)}</span></button>`).join('')}</div>`;
-    this.sel=null; $$('.opt',b).forEach(o=>o.onclick=()=>{ if(o.disabled) return; $$('.opt',b).forEach(x=>x.classList.remove('sel')); o.classList.add('sel'); this.sel=+o.dataset.k; APP.clearErr(); }); },
-  hint(q){ const wrong=q.opts.filter(o=>o.k!==0); return 'الخيار «\u2068'+wrong[ri(0,wrong.length-1)].t+'\u2069» ليس هو الإجابة.'; },
-  check(q,b){ if(this.sel===null) return {err:'اختر إجابة أولًا'}; $$('.opt',b).forEach(o=>{ o.disabled=true; if(+o.dataset.k===0) o.classList.add('ok'); else if(+o.dataset.k===this.sel) o.classList.add('no'); });
-    const r=this.round; r.i++; const good=this.sel===0; if(good) r.score++; $('.qprog i',b).style.width=(r.i/QN*100)+'%';
-    return good?ok('',`<br>${bidi(q.it[2])}`):no('',`<br>${bidi(q.it[2])}`); }});
-
-/* ---------- engine ---------- */
-let stats={}; try{ stats=JSON.parse(store.get(KEY)||'{}'); }catch(e){}
-const saveStats=()=>store.set(KEY,JSON.stringify(stats));
-const menu=$('#menu'), view=$('#drill'), box=$('#qbody'), fb=$('#fb'), err=$('#err'), chk=$('#chk'), nxt=$('#nxt'), hnt=$('#hnt'), hbox=$('#hbox');
-let cur=null, q=null, done=false, sess={c:0,a:0,s:0};
-APP.clearErr=()=>{ err.textContent=''; };
-function drawMenu(){ $('#drills').innerHTML=D.map(d=>{ const s=stats[d.id]||{c:0,a:0,best:0}; const m=s.c>=5;
-  return `<button class="panel dcard" data-d="${d.id}"><span class="di"><svg class="ic"><use href="#${d.icon}"/></svg></span><div><h3>${d.title}</h3><p>${d.desc}</p>
-  <div class="st">${m?'<span class="chip ok"><svg class="ic"><use href="#i-check"/></svg>متقَن</span>':''}<span class="chip">صحيح: ${s.c}</span><span class="chip">أفضل سلسلة: ${s.best||0}</span></div></div><svg class="ic"><use href="#i-left"/></svg></button>`; }).join('');
-  $$('#drills .dcard').forEach(c=>c.onclick=()=>{ fromMenu=true; location.hash=c.dataset.d; }); }
-function scoreTxt(){ $('#sc1').textContent='صحيح '+sess.c+' من '+sess.a; $('#sc2').textContent='سلسلة '+sess.s; }
-function newQ(){ q=cur.make(); done=false; cur.render(q,box); fb.className='fb'; fb.innerHTML=''; err.textContent=''; hbox.hidden=true; chk.hidden=false; nxt.hidden=true; hnt.hidden=false;
-  const inp=$('input.in',box); if(inp&&matchMedia('(hover:hover)').matches) inp.focus(); }
-function open(id){ cur=D.find(d=>d.id===id); if(!cur){ menu.hidden=false; view.hidden=true; drawMenu(); return; }
-  sess={c:0,a:0,s:0}; if(cur.quiz) cur.round=null; $('#dtitle').textContent=cur.title; menu.hidden=true; view.hidden=false; $('#result').hidden=true; $('#qwrap').hidden=false; scoreTxt(); newQ(); scrollTo(0,0); }
-function check(){ if(done||!cur) return; const r=cur.check(q,box); if(r.err){ err.textContent=r.err; box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); return; }
-  done=true; sess.a++; const s=stats[cur.id]||(stats[cur.id]={c:0,a:0,best:0}); s.a++;
-  if(r.ok){ sess.c++; sess.s++; s.c++; s.best=Math.max(s.best,sess.s); } else sess.s=0; saveStats(); scoreTxt();
-  fb.className='fb show '+(r.ok?'ok':'no'); fb.innerHTML=r.html; fb.classList.add('pop'); chk.hidden=true; hnt.hidden=true; nxt.hidden=false;
-  if(sess.s>0&&sess.s%5===0) say('رائع! '+sess.s+' إجابات صحيحة متتالية');
-  if(cur.quiz&&cur.round.i>=QN) nxt.innerHTML='<svg class="ic"><use href="#i-flag"/></svg>النتيجة'; else nxt.innerHTML='التالي<svg class="ic"><use href="#i-left"/></svg>';
-  setTimeout(()=>fb.scrollIntoView({behavior:'smooth',block:'nearest'}),60); }
-function next(){ if(cur.quiz&&cur.round&&cur.round.i>=QN){ const r=cur.round, p=Math.round(r.score/QN*100); $('#qwrap').hidden=true; const R=$('#result'); R.hidden=false;
-    $('#rring').style.setProperty('--p',p); $('#rval').textContent=r.score+' من '+QN; $('#rmsg').textContent=p>=90?'ممتاز! استيعاب رائع للوحدة':p>=70?'جيد جدًا، راجع الأسئلة التي أخطأت فيها':p>=50?'جيد، ننصح بمراجعة الشرح ثم المحاولة مرة أخرى':'راجع شرح الوحدة ثم أعد المحاولة'; cur.round=null; return; }
-  newQ(); }
-chk.onclick=check; nxt.onclick=next;
-hnt.onclick=()=>{ const t=cur.hint&&cur.hint(q,box); if(t){ hbox.textContent=t; hbox.hidden=false; } };
-box.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); if(!done) check(); else next(); } });
-box.addEventListener('input',()=>{ err.textContent=''; });
-$('#again').onclick=()=>open(cur.id);
-let fromMenu=false;
-$('#toMenu').onclick=()=>{ if(fromMenu){ history.back(); } else { history.replaceState(null,'',location.pathname); open(null); } };
-addEventListener('hashchange',()=>{ if(!location.hash) fromMenu=false; open(location.hash.slice(1)); });
-open(location.hash.slice(1));
+D.push(PR.mcq({bank:BANK}));
+PR.run('u5',D);
 })();
