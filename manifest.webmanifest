@@ -1,0 +1,31 @@
+{
+ "name": "مبادئ شبكات الحاسب",
+ "short_name": "شبكات الحاسب",
+ "description": "شرح تفاعلي لوحدات مقرر مبادئ شبكات الحاسب مع تمارين للمراجعة",
+ "lang": "ar",
+ "dir": "rtl",
+ "start_url": "./index.html",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#f3f6fb",
+ "theme_color": "#1d4ed8",
+ "icons": [
+  {
+   "src": "icons/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}
