@@ -30,7 +30,7 @@ function classify(o){ let last=-1;
   return {id:o.id,icon:o.icon,title:o.title,desc:o.desc,
   make(){ let i; do{ i=ri(0,o.items.length-1); }while(o.items.length>1&&i===last); last=i; const it=o.items[i]; return {t:it[0],k:it[1],x:it[2]||'',cats:o.shuffleCats?shuffle(o.cats):o.cats}; },
   render(q,b){ b.innerHTML=`<div class="qlabel">${esc(o.label)}</div><div class="item">${typeof q.t==="object"?q.t.html:bidi(q.t)}</div>
-    <div class="opts ${o.cats.length<=3?'g'+o.cats.length:'list'}">${q.cats.map(c=>`<button type="button" class="opt" data-c="${c.k}"><span dir="auto">${bidi(c.t)}</span></button>`).join('')}</div>`; this.sel=null; selectable(b,this,'c'); },
+    <div class="opts ${o.cats.length<=3&&o.cats.every(c=>c.t.length<=(o.cats.length===2?26:12))?'g'+o.cats.length:'list'}">${q.cats.map(c=>`<button type="button" class="opt" data-c="${c.k}"><span dir="auto">${bidi(c.t)}</span></button>`).join('')}</div>`; this.sel=null; selectable(b,this,'c'); },
   hint:o.hint?(q=>typeof o.hint==='function'?o.hint(q):o.hint):undefined,
   check(q,b){ if(this.sel===null) return {err:'اختر إجابة أولًا'}; $$('.opt',b).forEach(x=>{ x.disabled=true; if(x.dataset.c===q.k) x.classList.add('ok'); else if(x.dataset.c===this.sel) x.classList.add('no'); });
     const cat=o.cats.find(c=>c.k===q.k); const sol=`<br>الإجابة: <b>${bidi(cat.t)}</b>${q.x?'<br>'+bidi(q.x):''}`; return this.sel===q.k?ok('',q.x?'<br>'+bidi(q.x):''):no('',sol); }}; }
